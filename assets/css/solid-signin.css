@@ -251,8 +251,13 @@ button[type="button"] {
         justify-content: center;
     }
     .sign-in .sign-in-wrapper {
-        width: 25em;
+        width: 60%;
         height: 100%;
+        margin: auto;
+    }
+
+    #sign-in-btn {
+        width: 40%;
     }
     .field {
         width: 80%;
