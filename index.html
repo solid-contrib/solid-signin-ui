@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Solid Sign In</title>
+        <meta charset="utf-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#8E54E9">
+        <meta name="apple-mobile-web-app-status-bar-style" content="#8E54E9">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,100,300,700,900' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="assets/css/solid-theme.css">
+        <link rel="stylesheet" href="assets/css/solid-signin.css">
+        <link rel="manifest" href="manifest.json">
+    </head>
+    <body>
+        <main>
+            <section id="sign-in" class="sign-in">
+                <div class="sign-in-wrapper">
+                    <h1>Sign In</h1>
+                    <div id="successbox">
+                      <div class="icon-success svg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="72px" height="72px">
+                          <g fill="none" stroke="#43C47A" stroke-width="2">
+                            <circle cx="36" cy="36" r="35" style="stroke-dasharray:240px, 240px; stroke-dashoffset: 480px;"></circle>
+                            <path d="M17.417,37.778l9.93,9.909l25.444-25.393" style="stroke-dasharray:50px, 50px; stroke-dashoffset: 0px;"></path>
+                          </g>
+                        </svg>
+                      </div>
+                      <h2>Success!</h2>
+                      <!-- <button type="button" id="account-btn" class="button">Take me to my account</button> -->
+                    </div>
+                    <ul id="errorbox">
+                    </ul>
+                    <form id="form">
+                        <fieldset id="fields">
+                            <div class="field">
+                                <div class="field-icon">
+                                    <img src="assets/img/username-icon.png" height="60" alt="">
+                                </div>
+                                <div class="field-content">
+                                    <label for="">Username</label>
+                                    <input type="text" name="username" class="lower" placeholder="john23" value="" required>
+                                </div>
+                                <div id="username-field-status" class="field-status"></div>
+                            </div>
+                            <div class="field">
+                                <div class="field-icon">
+                                    <img src="assets/img/password-icon1.png" height="60" alt="">
+                                </div>
+                                <div class="field-content">
+                                    <label for="">Password</label>
+                                    <input type="password" name="password" placeholder="password" value="" required>
+                                </div>
+                                <div id="password-field-status" class="field-status"></div>
+                            </div>
+                        </fieldset>
+                        <button type="button" id="sign-in-btn">Sign in</button>
+                    </form>
+                </div>
+              </section>
+        </main>
+
+        <script src="assets/js/app.js"></script>
+    </body>
+</html>
