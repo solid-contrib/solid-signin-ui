@@ -1,6 +1,7 @@
 (function () {
   var DOMAIN = 'https://databox2.com'
   var ACCOUNT_ENDPOINT = 'api/accounts/signin'
+  var SIGNUP_LINK = 'https://databox2.com'
 
   var accURL = {}
   var queryVals = (function (a) {
@@ -32,6 +33,9 @@
   if (_accEndpoint && _accEndpoint.length > 0) {
     ACCOUNT_ENDPOINT = _accEndpoint
   }
+
+  // Set the signup link
+  document.getElementById('signup').href = SIGNUP_LINK
 
   var userOK, nameOK, emailOK, passOK
 
@@ -95,6 +99,4 @@
       signIn()
     }
   })
-
-  userField.addEventListener('input', validateUsername, false)
 })()
