@@ -2,6 +2,16 @@
   var DOMAIN = 'https://databox2.com'
   var ACCOUNT_ENDPOINT = 'api/accounts/signin'
   var SIGNUP_LINK = 'https://databox2.com'
+  var SIGNIN_LINK = 'http://localhost:8080'
+
+  // get elements
+  var successbox = document.getElementById('successbox')
+  var form = document.getElementById('form')
+  var fields = document.getElementById('fields')
+  var signinBtn = document.getElementById('sign-in-btn')
+  var signoutBtn = document.getElementById('signout')
+  var userField = document.getElementsByName('username')[0]
+  var passField = document.getElementsByName('password')[0]
 
   var accURL = {}
   var queryVals = (function (a) {
@@ -28,42 +38,67 @@
   accURL.host = parser.host + '/' // => 'example.com'
   accURL.path = parser.pathname // => '/pathname/'
   accURL.schema = parser.protocol + '//'
+  accURL.url = accURL.schema + accURL.host + accURL.path
 
   // Prepare account endpoint
   if (_accEndpoint && _accEndpoint.length > 0) {
     ACCOUNT_ENDPOINT = _accEndpoint
   }
 
+  if (queryVals['username']) {
+    userField.value = queryVals['username']
+  }
+
   // Set the signup link
   document.getElementById('signup').href = SIGNUP_LINK
-
-  var userOK, nameOK, emailOK, passOK
-
-  // get elements
-  var successbox = document.getElementById('successbox')
-  var form = document.getElementById('form')
-  var fields = document.getElementById('fields')
-  var signinBtn = document.getElementById('sign-in-btn')
-  var userField = document.getElementsByName('username')[0]
-  var passField = document.getElementsByName('password')[0]
 
   var signIn = function () {
     var username = document.getElementsByName('username')[0].value
     var password = document.getElementsByName('password')[0].value
-    var email = document.getElementsByName('email')[0].value
+
+    fields.setAttribute('disabled', true)
+    signinBtn.classList.add('disabled')
+
+    var data = {
+      username: username
+    }
+    saveLocalStorage(data)
+    notValid('signin-error', 'Wrong username or password')
+
+    fields.setAttribute('disabled', false)
+    signinBtn.classList.remove('disabled')
+  }
+
+  var signOut = function () {
+    clearLocalStorage()
+    userField.value = ''
+    clearError('signin-error')
+    console.log('You have been signed out')
   }
 
   var clearError = function (elemId) {
-    document.getElementById(elemId).innerHTML = ''
     var errorBox = document.getElementById('errorbox')
-    var errElem = document.getElementById(elemId + '-error')
+    var errElem = document.getElementById(elemId)
     if (errElem) {
       errElem.parentNode.removeChild(errElem)
     }
     if (errorBox.style.display === 'block') {
-      if (errorBox.childNodes.length === 1 && errorBox.childNodes[0].nodeType === 3) {
+      if (errorBox.childNodes.length === 1 &&
+        errorBox.childNodes[0].nodeType === 3) {
         errorBox.style.display = 'none'
       }
+    }
+  }
+
+  var notValid = function (elemId, msg) {
+    var errorBox = document.getElementById('errorbox')
+    errorBox.style.display = 'block'
+    var errElem = document.getElementById(elemId)
+    if (!errElem) {
+      var li = document.createElement('li')
+      li.id = elemId
+      li.innerHTML = msg
+      errorBox.appendChild(li)
     }
   }
 
@@ -89,6 +124,34 @@
     }
   }
 
+  // save to localStorage
+  var saveLocalStorage = function (data) {
+    try {
+      window.localStorage.setItem(accURL.url, JSON.stringify(data))
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  // clear localstorage data
+  var clearLocalStorage = function () {
+    try {
+      window.localStorage.removeItem(accURL.url)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  // load localstorage config data
+  var loadLocalStorage = function () {
+    try {
+      var data = JSON.parse(window.localStorage.getItem(accURL.url))
+      if (data) {
+        return data
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   // add event listeners
   signinBtn.addEventListener('click', function () {
     signIn()
@@ -99,4 +162,15 @@
       signIn()
     }
   })
+
+  signoutBtn.addEventListener('click', function () {
+    signOut()
+  }, false)
+
+  var user = loadLocalStorage()
+  if (user) {
+    if (user.username) {
+      userField.value = user.username
+    }
+  }
 })()
