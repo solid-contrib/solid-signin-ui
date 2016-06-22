@@ -755,7 +755,6 @@ var Templater = function(list) {
           elm.setAttribute(valueName.attr, value);
           if (valueName.evt && valueName.evt.fn) {
             elm.addEventListener(valueName.evt.action, function () {
-              console.log('Registered event', valueName.evt.action, 'with function', valueName.evt.fn)
               valueName.evt.fn(value)
             }, false)
           }

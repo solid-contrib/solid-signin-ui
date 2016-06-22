@@ -26,8 +26,9 @@
                 <div class="modal-body">
                   The application running at:
                   <p id="appUrl" class="mt-10"></p>
-                  wants to show you information from a site or sites you have not visited before.
-                  Would you like to allow it?
+                  requires your permission to display information from a site or sites you have not visited before.
+                  <br />
+                  <div class="mt-10">Would you like to allow it?</div>
                 </div>
                 <div class="column flex">
                   <div class="flex stretch center">
@@ -40,8 +41,15 @@
                     <button id="add-new" class="btn btn-primary">Yes</button>
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <div id="auth-info" class="text-left hidden"></div>
+                <div id="more-info" class="modal-footer hidden">
+                  <p class="text-justify">
+                    Web sites are constructed from snippets of information that reside on multiple computers
+                    or servers on the Web. If you have never accessed information on a particular server before,
+                    the app you're using needs to make sure you are willing to disclose your identity to that web
+                    site, in order to be able to access protected information. Specifically, these are the servers
+                    that require to know your identity (uncheck the ones you don't want to identify to):
+                  </p>
+                  <div id="auth-info" class="text-left"></div>
                 </div>
             </div>
         </div>
@@ -97,6 +105,7 @@
   <script src="assets/js/list.js"></script>
   <script src="assets/js/rdflib-0.7.0.min.js"></script>
   <script src="assets/js/solid.js"></script>
+  <script src="assets/js/sha1.min.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

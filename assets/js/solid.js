@@ -2289,8 +2289,8 @@ var SolidWebClient = {
    * @param url {String} URL of a resource or container
    * @return {Promise} Result of an HTTP HEAD operation (returns a meta object)
    */
-  head: function head (url) {
-    return this.solidRequest(url, 'HEAD')
+  head: function head (url, options) {
+    return this.solidRequest(url, 'HEAD', options)
   },
 
   /**
@@ -2534,7 +2534,7 @@ module.exports = require('./shorthash');
 /*
 	shorthash
 	(c) 2013 Bibig
-	
+
 	https://github.com/bibig/node-shorthash
 	shorthash may be freely distributed under the MIT license.
 */
@@ -2564,28 +2564,28 @@ function binaryTransfer(integer, binary) {
 	var num;
 	var result = '';
 	var sign = integer < 0 ? '-' : '';
-	
+
 	function table (num) {
 		var t = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		return t[num];
 	}
-	
+
 	integer = Math.abs(integer);
-	
+
 	while (integer >= binary) {
 		num = integer % binary;
 		integer = Math.floor(integer / binary);
 		stack.push(table(num));
 	}
-	
+
 	if (integer > 0) {
 		stack.push(table(integer));
 	}
-	
+
 	for (var i = stack.length - 1; i >= 0; i--) {
 		result += stack[i];
-	} 
-	
+	}
+
 	return sign + result;
 }
 
@@ -2604,7 +2604,7 @@ function random (_len) {
 	var len = _len || 8 ;
 	return require('crypto').randomBytes(len).toString('hex');
 	*/
-	
+
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
 	var rs = '';
 	var len = _len || 8 ;
