@@ -246,30 +246,39 @@ var Conn = (function () {
     }
 
     // done loading
-    // return Solid.web.get(User.authList)
-    //   .then(function (response) {
-    //     var g = response.parsedGraph()
-    //     var connections = g.statementsMatching(
-    //       undefined,
-    //       Solid.vocab.rdf('type'),
-    //       Solid.vocab.solid('Connection')
-    //     )
-    //     connections.forEach(function (person) {
-    //       var authz = {}
-    //       authz.webid = person.subject.uri
-    //       authz.graph = g.statementsMatching(person.subject, undefined, undefined)
-    //       var name = g.any(person.subject, Solid.vocab.foaf('name'))
-    //       if (name) {
-    //         authz.name = name.value
-    //       }
-    //       addToList(authz)
-    //     })
-    //     return connections.length
-    //   })
-    //   .catch(function () {
-    //     // TODO handle errors in case of missing index files or no access
-    //     return 0
-    //   })
+    return Solid.web.get(User.authList)
+      .then(function (response) {
+        var g = response.parsedGraph()
+        var tokens = g.statementsMatching(
+          undefined,
+          Solid.vocab.rdf('type'),
+          Solid.vocab.solid('AccessToken')
+        )
+        tokens.forEach(function (token) {
+          var item = {}
+          item.uri = token.subject.uri
+          item.graph = g.statementsMatching(token.subject, undefined, undefined)
+          var origin = g.any(token.subject, Solid.vocab.solid('origin'))
+          if (origin) {
+            item.origin = origin.uri
+          }
+          var date = g.any(token.subject, Solid.vocab.dct('created'))
+          if (date) {
+            item.date = date.value
+          }
+          var tkn = g.any(token.subject, Solid.vocab.solid('accessToken'))
+          if (tkn) {
+            item.token = tkn.value
+          }
+          console.log(item)
+
+          addToList(item)
+        })
+      })
+      .catch(function () {
+        // TODO handle errors in case of missing index files or no access
+        return 0
+      })
   }
 
   var requestAuthz = function (uris) {
@@ -362,7 +371,7 @@ var Conn = (function () {
               )
               g.add(
                 resUri,
-                Solid.vocab.dct('accessToken'),
+                Solid.vocab.solid('accessToken'),
                 $rdf.lit(token)
               )
               g.add(
@@ -384,6 +393,7 @@ var Conn = (function () {
                 graph: st
               }
               items.push(item)
+              Authorizations[uri] = item
 
               addToList(item, 'origin', 'asc', true)
 
@@ -432,12 +442,11 @@ var Conn = (function () {
   }
 
   // Remove a connection
-  var removeAuthz = function (uri) {
+  var removeAuthz = function (item) {
     var toAdd = null
     var toDel = []
 
-    var authz = Authorizations[uri]
-    authz.graph.forEach(function (st) {
+    item.graph.forEach(function (st) {
       toDel.push(st.toNT())
     })
     Solid.web.patch(User.authList, toDel, toAdd).then(function () {
@@ -460,9 +469,9 @@ var Conn = (function () {
       }
 
       // Remove the connection from the local list
-      delete Authorizations[uri]
+      delete Authorizations[item.uri]
       // Remove the UI element
-      uList.remove('origin', uri)
+      uList.remove('origin', item.origin)
       if (uList.size() === 0) {
         showElement(start)
       }
@@ -477,6 +486,11 @@ var Conn = (function () {
   var cancelView = function () {
     authorization.classList.remove('slide-in')
     authorization.classList.add('slide-out')
+    // remove card data
+    var old = document.getElementById('authorization-card')
+    if (old) {
+      old.parentNode.removeChild(old)
+    }
     if (uList.visibleItems.length === 0) {
       hideElement(searchElement)
       hideElement(actionsElement)
@@ -494,11 +508,8 @@ var Conn = (function () {
     var data = Authorizations[uri]
 
     var card = document.createElement('div')
+    card.setAttribute('id', 'authorization-card')
     card.classList.add('card', 'no-border')
-
-    var image = document.createElement('div')
-    image.classList.add('text-center')
-    card.appendChild(image)
 
     var body = document.createElement('div')
     card.appendChild(body)
@@ -511,19 +522,49 @@ var Conn = (function () {
       body.appendChild(title)
     }
 
-    // URI
+    // Origin
     var section = document.createElement('div')
     var label = document.createElement('h6')
     var icon = document.createElement('i')
-    icon.classList.add('fa', 'fa-user')
+    icon.classList.add('fa', 'fa-link')
     label.appendChild(icon)
-    label.innerHTML += ' Server location'
+    label.innerHTML += ' Authorized address'
     section.appendChild(label)
     body.appendChild(section)
 
     var div = document.createElement('div')
     div.classList.add('card-meta')
-    div.innerHTML = data.uri
+    div.innerHTML = data.origin
+    body.appendChild(div)
+
+    // Date
+    section = document.createElement('div')
+    label = document.createElement('h6')
+    icon = document.createElement('i')
+    icon.classList.add('fa', 'fa-clock-o')
+    label.appendChild(icon)
+    label.innerHTML += ' Created on'
+    section.appendChild(label)
+    body.appendChild(section)
+
+    div = document.createElement('div')
+    div.classList.add('card-meta')
+    div.innerHTML = data.date
+    body.appendChild(div)
+
+    // Token
+    section = document.createElement('div')
+    label = document.createElement('h6')
+    icon = document.createElement('i')
+    icon.classList.add('fa', 'fa-ticket')
+    label.appendChild(icon)
+    label.innerHTML += ' Token'
+    section.appendChild(label)
+    body.appendChild(section)
+
+    div = document.createElement('div')
+    div.classList.add('card-meta', 'word-wrap')
+    div.innerHTML = data.token
     body.appendChild(div)
 
     // Actions
@@ -645,7 +686,7 @@ var Conn = (function () {
     overlay.style.display = 'flex'
   }
 
-  var removeDialog = function (authz) {
+  var removeDialog = function (item) {
     var body = document.getElementsByTagName('body')[0]
     var moverlay = document.createElement('div')
     body.appendChild(moverlay)
@@ -682,7 +723,7 @@ var Conn = (function () {
     body = document.createElement('div')
     container.appendChild(body)
     body.classList.add('modal-body')
-    body.innerHTML = '<h4 class"text-center">Are you sure you want to remove this authorization?</h4>'
+    body.innerHTML = '<h4 class"text-center">Are you sure you want to remove this item?</h4>'
 
     var footer = document.createElement('div')
     container.appendChild(footer)
@@ -701,7 +742,7 @@ var Conn = (function () {
     del.classList.add('btn', 'btn-primary')
     del.innerHTML = 'Yes, remove it'
     del.addEventListener('click', function () {
-      removeAuthz(authz.uri)
+      removeAuthz(item)
     }, false)
   }
 
