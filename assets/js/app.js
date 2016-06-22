@@ -296,7 +296,7 @@ var Conn = (function () {
     })
     var tellMore = document.getElementById('tell-more')
     tellMore.addEventListener('click', function () {
-      showElement(moreInfo)
+      toggleElement(moreInfo)
     })
 
     addNewBtn.addEventListener('click', function () {
@@ -782,6 +782,14 @@ var Conn = (function () {
   var showElement = function (elem) {
     if (elem) {
       elem.classList.remove('hidden')
+    }
+  }
+
+  var toggleElement = function (elem) {
+    if (elem.classList.contains('hidden')) {
+      showElement(elem)
+    } else {
+      hideElement(elem)
     }
   }
 
