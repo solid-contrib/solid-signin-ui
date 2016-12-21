@@ -37,20 +37,27 @@
   // Set the signup link
   document.getElementById('signup').href = SIGNUP_LINK
 
-  var userOK, nameOK, emailOK, passOK
+  var userOK, nameOK, passOK
 
   // get elements
   var successbox = document.getElementById('successbox')
   var form = document.getElementById('form')
   var fields = document.getElementById('fields')
   var signinBtn = document.getElementById('sign-in-btn')
-  var userField = document.getElementsByName('username')[0]
-  var passField = document.getElementsByName('password')[0]
 
   var signIn = function () {
     var username = document.getElementsByName('username')[0].value
     var password = document.getElementsByName('password')[0].value
-    var email = document.getElementsByName('email')[0].value
+
+    document.getElementById('returnToUrl').value = queryVals.returnToUrl
+    document.getElementById('response_type').value = queryVals.response_type
+    document.getElementById('display').value = queryVals.display
+    document.getElementById('scope').value = queryVals.scope
+    document.getElementById('client_id').value = queryVals.client_id
+    document.getElementById('redirect_uri').value = queryVals.redirect_uri
+    document.getElementById('state').value = queryVals.state
+    document.getElementById('nonce').value = queryVals.nonce
+    document.getElementById('form').submit()
   }
 
   var clearError = function (elemId) {
